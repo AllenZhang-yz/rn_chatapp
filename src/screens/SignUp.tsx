@@ -8,20 +8,37 @@ import {
   TextInput,
   View,
   Alert,
+  Platform,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-// import {useNavigation} from '@react-navigation/native';
-// import {IStackNavigation} from '../navigation/Navigation';
+import {useNavigation} from '@react-navigation/native';
+import {IStackNavigation} from '../navigation/Navigation';
 
 import Logo from '../utility/images/chatlogo.png';
 import {deviceWidth} from '../utility/styles/appStyle';
 
 const SignUp = () => {
-  // const navigation = useNavigation<IStackNavigation>();
+  const navigation = useNavigation<IStackNavigation>();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
+
+  const registerUser = () => {
+    if (!name) {
+      Alert.alert('Name is required');
+    }
+    if (!email) {
+      Alert.alert('Email is required');
+    }
+    if (!password) {
+      Alert.alert('Password is required');
+    }
+    if (!confirmPwd || confirmPwd !== password) {
+      Alert.alert('Password does not match');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView>
@@ -33,31 +50,43 @@ const SignUp = () => {
           style={styles.input}
           onChangeText={(value) => setName(value)}
           value={name}
+          placeholderTextColor="#575554"
+          onSubmitEditing={registerUser}
         />
         <TextInput
           placeholder="Email"
           style={styles.input}
           onChangeText={(value) => setEmail(value)}
           value={email}
-          secureTextEntry={true}
           autoCapitalize="none"
+          placeholderTextColor="#575554"
+          onSubmitEditing={registerUser}
         />
         <TextInput
           placeholder="Password"
           style={styles.input}
           onChangeText={(value) => setPassword(value)}
           value={password}
+          placeholderTextColor="#575554"
+          onSubmitEditing={registerUser}
+          secureTextEntry={true}
         />
         <TextInput
           placeholder="Confirm Password"
           style={styles.input}
           onChangeText={(value) => setConfirmPwd(value)}
           value={confirmPwd}
+          placeholderTextColor="#575554"
+          onSubmitEditing={registerUser}
+          secureTextEntry={true}
         />
         <TouchableOpacity style={styles.btn}>
+          <Button title="Sign Up" onPress={registerUser} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.btn}>
           <Button
-            title="Login"
-            onPress={() => Alert.alert(`${name},${email},${password}`)}
+            title="Have an account?"
+            onPress={() => navigation.navigate('Login')}
           />
         </TouchableOpacity>
       </KeyboardAwareScrollView>
@@ -68,6 +97,8 @@ const SignUp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
+    opacity: 0.8,
   },
   imgContainer: {
     alignItems: 'center',
@@ -79,7 +110,10 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     margin: 10,
-    padding: 10,
+    padding: Platform.OS === 'ios' ? 15 : 10,
+    backgroundColor: '#8c8382',
+    borderRadius: 8,
+    fontSize: 20,
   },
   btn: {
     margin: 10,
