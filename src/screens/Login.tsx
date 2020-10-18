@@ -1,6 +1,5 @@
 import React, {useState, FC} from 'react';
 import {
-  Image,
   SafeAreaView,
   TextInput,
   StyleSheet,
@@ -13,9 +12,8 @@ import {
   Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Logo from '../utility/images/chatlogo.png';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {IStackNavigation} from '../navigation/Navigation';
-import {deviceWidth} from '../utility/styles/appStyle';
 
 const Login = () => {
   const navigation = useNavigation<IStackNavigation>();
@@ -42,7 +40,7 @@ const Login = () => {
       <DismissKeyboard>
         <View>
           <View style={styles.imgContainer}>
-            <Image source={Logo} style={styles.img} />
+            <AntDesign name="wechat" size={200} color="#65a1e0" />
           </View>
           <TextInput
             placeholder="Email address"
@@ -92,11 +90,7 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     alignItems: 'center',
-  },
-  img: {
-    width: deviceWidth * 0.8,
-    height: deviceWidth * 0.8,
-    borderRadius: 20,
+    marginTop: 20,
   },
   btn: {
     marginHorizontal: 10,

@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {
   SafeAreaView,
-  Image,
   Button,
   TouchableOpacity,
   StyleSheet,
@@ -11,11 +10,9 @@ import {
   Platform,
 } from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
 import {IStackNavigation} from '../navigation/Navigation';
-
-import Logo from '../utility/images/chatlogo.png';
-import {deviceWidth} from '../utility/styles/appStyle';
 
 const SignUp = () => {
   const navigation = useNavigation<IStackNavigation>();
@@ -43,7 +40,7 @@ const SignUp = () => {
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView>
         <View style={styles.imgContainer}>
-          <Image source={Logo} style={styles.img} />
+          <AntDesign name="wechat" size={200} color="#65a1e0" />
         </View>
         <TextInput
           placeholder="Name"
@@ -102,11 +99,9 @@ const styles = StyleSheet.create({
   },
   imgContainer: {
     alignItems: 'center',
+    marginTop: 20,
   },
-  img: {
-    width: deviceWidth * 0.8,
-    height: deviceWidth * 0.8,
-  },
+
   input: {
     borderWidth: 1,
     margin: 10,
