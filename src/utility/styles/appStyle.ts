@@ -2,7 +2,7 @@ import {Dimensions} from 'react-native';
 import {smallDeviceHeight} from '../constants/const';
 
 export const {height: deviceHeight, width: deviceWidth} = Dimensions.get(
-  'window'
+  'window',
 );
 
 const getFieldDimensions = () => {
