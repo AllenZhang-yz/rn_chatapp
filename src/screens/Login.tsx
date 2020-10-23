@@ -1,4 +1,4 @@
-import React, {useState, FC} from 'react';
+import React, {useState} from 'react';
 import {
   SafeAreaView,
   TextInput,
@@ -7,37 +7,51 @@ import {
   View,
   TouchableOpacity,
   Alert,
-  TouchableWithoutFeedback,
-  Keyboard,
   Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {IStackNavigation} from '../navigation/Navigation';
+import {loginRequest} from '../auth';
+import {useMutation} from 'react-query';
+import {key, setAsyncData} from '../asyncStorage/Async';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {setUniqueValue} from '../utility/constants/const';
+import Loader from '../components/Loader';
 
 const Login = () => {
   const navigation = useNavigation<IStackNavigation>();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const DismissKeyboard: FC = ({children}) => (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      {children}
-    </TouchableWithoutFeedback>
-  );
+  const [loginMutate, {isLoading}] = useMutation(loginRequest, {
+    onSuccess: async (data) => {
+      const uid = data.user?.uid;
+      if (uid) {
+        await setAsyncData(key.uid, uid);
+        setUniqueValue(uid);
+      }
+      navigation.replace('Dashboard');
+    },
+    onError: (error: any) => {
+      Alert.alert(error.message);
+    },
+  });
 
-  const loginUser = () => {
+  const loginUser = async () => {
     if (!email) {
       Alert.alert('Type your email');
     }
     if (!password) {
       Alert.alert('Type your password');
     }
+    await loginMutate({email, password});
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <DismissKeyboard>
+      {isLoading && <Loader />}
+      <KeyboardAwareScrollView>
         <View>
           <View style={styles.imgContainer}>
             <AntDesign name="wechat" size={200} color="#65a1e0" />
@@ -48,6 +62,7 @@ const Login = () => {
             onChangeText={(value) => setEmail(value)}
             value={email}
             placeholderTextColor="#575554"
+            autoCapitalize="none"
             onSubmitEditing={loginUser}
           />
           <TextInput
@@ -69,7 +84,7 @@ const Login = () => {
             />
           </TouchableOpacity>
         </View>
-      </DismissKeyboard>
+      </KeyboardAwareScrollView>
     </SafeAreaView>
   );
 };

@@ -7,11 +7,13 @@ import {
 import Login from '../screens/Login';
 import SignUp from '../screens//SignUp';
 import Dashboard from '../screens/Dashboard';
+import AuthHelper from '../authHelper/authHelper';
 
 export type StackParamList = {
   Login: undefined;
   SignUp: undefined;
   Dashboard: undefined;
+  AuthHelper: undefined;
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -22,7 +24,7 @@ const Navigation = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="AuthHelper"
         screenOptions={{
           headerShown: true,
           headerStyle: {backgroundColor: '#05a0e8'},
@@ -33,6 +35,11 @@ const Navigation = () => {
             fontSize: 18,
           },
         }}>
+        <Stack.Screen
+          name="AuthHelper"
+          component={AuthHelper}
+          options={{headerShown: false}}
+        />
         <Stack.Screen
           name="Login"
           component={Login}

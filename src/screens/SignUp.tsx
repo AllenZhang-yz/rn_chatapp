@@ -12,7 +12,13 @@ import {
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {useNavigation} from '@react-navigation/native';
+import {useMutation} from 'react-query';
 import {IStackNavigation} from '../navigation/Navigation';
+import {signUpRequest, addUser} from '../auth';
+import {setAsyncData, key} from '../asyncStorage/Async';
+import firebase from '../firebase/config';
+import {setUniqueValue} from '../utility/constants/const';
+import Loader from '../components/Loader';
 
 const SignUp = () => {
   const navigation = useNavigation<IStackNavigation>();
@@ -21,7 +27,34 @@ const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
 
-  const registerUser = () => {
+  const [addUserMutate, {isLoading: addUserIsLoading}] = useMutation(addUser, {
+    onError: (error: any) => {
+      Alert.alert(error.message);
+    },
+  });
+
+  const [signUpMutate, {isLoading}] = useMutation(signUpRequest, {
+    onSuccess: async () => {
+      let uid = firebase.auth().currentUser?.uid;
+      let userImg = '';
+      if (uid) {
+        try {
+          // await addUser({name, email, uid, userImg});
+          await addUserMutate({name, email, uid, userImg});
+          await setAsyncData(key.uid, uid);
+          setUniqueValue(uid);
+          navigation.replace('Dashboard');
+        } catch (err) {
+          Alert.alert(err);
+        }
+      }
+    },
+    onError: (error: any) => {
+      Alert.alert(error.message);
+    },
+  });
+
+  const registerUser = async () => {
     if (!name) {
       Alert.alert('Name is required');
     }
@@ -34,10 +67,12 @@ const SignUp = () => {
     if (!confirmPwd || confirmPwd !== password) {
       Alert.alert('Password does not match');
     }
+    await signUpMutate({email, password});
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {(isLoading || addUserIsLoading) && <Loader />}
       <KeyboardAwareScrollView>
         <View style={styles.imgContainer}>
           <AntDesign name="wechat" size={200} color="#65a1e0" />

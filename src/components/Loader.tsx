@@ -3,14 +3,11 @@ import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import {deviceWidth, deviceHeight} from '../utility/styles/appStyle';
 
 const Loader = () => {
-  let loading = false;
-  return loading ? (
+  return (
     <View style={styles.loaderContainer}>
-      <View style={styles.indicator}>
-        <ActivityIndicator size="large" animating={loading} color="grey" />
-      </View>
+      <ActivityIndicator size="large" color="blue" />
     </View>
-  ) : null;
+  );
 };
 
 const styles = StyleSheet.create({
