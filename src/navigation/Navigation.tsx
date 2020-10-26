@@ -8,12 +8,25 @@ import Login from '../screens/Login';
 import SignUp from '../screens//SignUp';
 import Dashboard from '../screens/Dashboard';
 import AuthHelper from '../authHelper/authHelper';
+import UserProfile from '../screens/UserProfile';
+import ChatRoom from '../screens/ChatRoom';
 
 export type StackParamList = {
   Login: undefined;
   SignUp: undefined;
   Dashboard: undefined;
   AuthHelper: undefined;
+  UserProfile: {
+    profileName: string;
+    profileImg: string;
+  };
+  ChatRoom: {
+    guestName: string;
+    guestImg: string;
+    guestUserId: string;
+    currentUserId: string;
+    currentUserName: string;
+  };
 };
 
 const Stack = createStackNavigator<StackParamList>();
@@ -58,6 +71,22 @@ const Navigation = () => {
           options={{
             headerLeft: () => null,
           }}
+        />
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={({route}) => ({
+            title: route.params.profileName,
+            headerBackTitleVisible: false,
+          })}
+        />
+        <Stack.Screen
+          name="ChatRoom"
+          component={ChatRoom}
+          options={({route}) => ({
+            headerBackTitleVisible: false,
+            title: route.params.guestName,
+          })}
         />
       </Stack.Navigator>
     </NavigationContainer>

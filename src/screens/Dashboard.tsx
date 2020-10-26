@@ -5,9 +5,10 @@ import {
   SafeAreaView,
   FlatList,
   StyleSheet,
-  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import {PERMISSIONS, request, RESULTS, check} from 'react-native-permissions';
 import {IStackNavigation} from '../navigation/Navigation';
 import firebase from '../firebase/config';
 import {uid} from '../utility/constants/const';
@@ -68,34 +69,82 @@ const Dashboard = () => {
   }, []);
 
   const selectPhotoTapped = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA,
-      {
-        title: 'ChatApp Camera Permission',
-        message: 'ChatApp needs access to your camera',
-        buttonNegative: 'Cancel',
-        buttonPositive: 'OK',
-      },
-    );
-    console.log('granted', granted);
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      ImagePicker.showImagePicker(
-        {storageOptions: {skipBackup: true}},
-        async (res) => {
-          if (res.didCancel) {
-            console.log('User canceled image picker');
-          } else if (res.error) {
-            console.log(res.error);
-          } else {
-            let src = `data:image/jpeg;base64,${res.data}`;
-            await updateUser(uid, src);
-            setUserInfo((prev) => ({...prev, userImg: src}));
-          }
-        },
-      );
+    if (Platform.OS === 'android') {
+      const checkResult = await check(PERMISSIONS.ANDROID.CAMERA);
+      if (checkResult) {
+        const requestResult = await request(PERMISSIONS.ANDROID.CAMERA, {
+          title: 'ChatApp Camera Permission',
+          message: 'ChatApp needs access to your camera',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        });
+        console.log('requestResult', requestResult);
+        if (requestResult === RESULTS.GRANTED) {
+          ImagePicker.showImagePicker(
+            {storageOptions: {skipBackup: true}},
+            async (res) => {
+              if (res.didCancel) {
+                console.log('User canceled image picker');
+              } else if (res.error) {
+                console.log(res.error);
+              } else {
+                let src = `data:image/jpeg;base64,${res.data}`;
+                await updateUser(uid, src);
+                setUserInfo((prev) => ({...prev, userImg: src}));
+              }
+            },
+          );
+        } else {
+          Alert.alert('Permission Denied');
+        }
+      }
     } else {
-      Alert.alert('Camera permission denied');
+      const checkResult = await check(PERMISSIONS.IOS.CAMERA);
+      if (checkResult) {
+        const requestResult = await request(PERMISSIONS.IOS.CAMERA, {
+          title: 'ChatApp Camera Permission',
+          message: 'ChatApp needs access to your camera',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        });
+        if (requestResult === RESULTS.GRANTED) {
+          ImagePicker.showImagePicker(
+            {storageOptions: {skipBackup: true}},
+            async (res) => {
+              if (res.didCancel) {
+                console.log('User canceled image picker');
+              } else if (res.error) {
+                console.log(res.error);
+              } else {
+                let src = `data:image/jpeg;base64,${res.data}`;
+                await updateUser(uid, src);
+                setUserInfo((prev) => ({...prev, userImg: src}));
+              }
+            },
+          );
+        } else {
+          Alert.alert('Permission Denied');
+        }
+      }
     }
+  };
+
+  const nameTap = (profileName: string, profileImg: string) => {
+    navigation.navigate('UserProfile', {profileName, profileImg});
+  };
+
+  const openChatRoom = (
+    guestName: string,
+    guestImg: string,
+    guestUserId: string,
+  ) => {
+    navigation.navigate('ChatRoom', {
+      guestName,
+      guestImg,
+      guestUserId,
+      currentUserId: uid,
+      currentUserName: userInfo.name,
+    });
   };
 
   return (
@@ -104,12 +153,20 @@ const Dashboard = () => {
         alwaysBounceVertical={false}
         data={allUsers}
         keyExtractor={(item) => item.id}
-        renderItem={({item}) => <ShowUsers user={item} />}
+        renderItem={({item}) => (
+          <ShowUsers
+            user={item}
+            onNameTap={() => nameTap(item.name, item.userImg)}
+            onImgTap={() => {}}
+            goToChatRoom={() => openChatRoom(item.name, item.userImg, item.id)}
+          />
+        )}
         ListHeaderComponent={
           <Profile
             img={userImg}
             name={name}
             onEditImgTap={() => selectPhotoTapped()}
+            onNameTap={() => nameTap(name, userImg)}
           />
         }
         style={styles.flatList}

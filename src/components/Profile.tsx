@@ -5,11 +5,11 @@ import userLogo from '../utility/images/userlogo.png';
 interface IProfile {
   img: string;
   name: string;
-  onImagTap: () => void;
+  onNameTap: () => void;
   onEditImgTap: () => void;
 }
 
-const Profile: FC<IProfile> = ({img, name, onEditImgTap, onImagTap}) => {
+const Profile: FC<IProfile> = ({img, name, onEditImgTap, onNameTap}) => {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={onEditImgTap} activeOpacity={0.8}>
@@ -21,7 +21,9 @@ const Profile: FC<IProfile> = ({img, name, onEditImgTap, onImagTap}) => {
           <Image style={styles.userLogo} source={userLogo} resizeMode="cover" />
         )}
       </TouchableOpacity>
-      <Text style={styles.text}>{name}</Text>
+      <Text style={styles.text} onPress={onNameTap}>
+        {name}
+      </Text>
     </View>
   );
 };

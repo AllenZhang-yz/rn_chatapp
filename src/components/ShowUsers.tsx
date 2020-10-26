@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import {Card, CardItem, Left, Body, Thumbnail, Text} from 'native-base';
+import {Card, CardItem, Left, Body, Thumbnail, Text, Right} from 'native-base';
 import {IUser} from '../screens/Dashboard';
 import userLogo from '../utility/images/userlogo.png';
 
@@ -8,9 +8,15 @@ interface IShowUsers {
   user: IUser;
   onImgTap: () => void;
   onNameTap: () => void;
+  goToChatRoom: () => void;
 }
 
-const ShowUsers: FC<IShowUsers> = ({user, onImgTap, onNameTap}) => {
+const ShowUsers: FC<IShowUsers> = ({
+  user,
+  onImgTap,
+  onNameTap,
+  goToChatRoom,
+}) => {
   return (
     <Card>
       <CardItem>
@@ -26,22 +32,29 @@ const ShowUsers: FC<IShowUsers> = ({user, onImgTap, onNameTap}) => {
             <Text onPress={onNameTap}>{user.name}</Text>
           </Body>
         </Left>
+        <Right>
+          <TouchableOpacity
+            style={styles.chatTextContainer}
+            onPress={goToChatRoom}
+            activeOpacity={0.7}>
+            <Text style={styles.chatText}>Chat</Text>
+          </TouchableOpacity>
+        </Right>
       </CardItem>
     </Card>
   );
 };
 
 const styles = StyleSheet.create({
-  item: {
-    padding: 18,
-    marginTop: 18,
-    borderColor: '#bbb',
-    borderWidth: 1,
-    borderRadius: 5,
-    backgroundColor: '#7e72ed',
-    marginHorizontal: 5,
+  chatTextContainer: {
+    justifyContent: 'center',
+    marginLeft: 80,
+    paddingHorizontal: 18,
+    paddingVertical: 15,
+    backgroundColor: '#05a0e8',
+    borderRadius: 8,
   },
-  name: {
+  chatText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
